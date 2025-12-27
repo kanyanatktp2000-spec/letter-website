@@ -1,6 +1,6 @@
 const scenes = [
   "letter.png",
-  "letteropen.png",
+  "letteropen.png", // เพลงเริ่มตรงนี้
   "wish.png",
   "1.png",
   "2.png",
@@ -19,31 +19,35 @@ const img = document.getElementById("sceneImage");
 const music = document.getElementById("bgm");
 
 /* preload รูป */
-scenes.forEach(src => {
+scenes.forEach(name => {
   const i = new Image();
-  i.src = src;
+  i.src = "./" + name;
 });
 
 /* เปลี่ยนฉาก */
-function changeScene(src) {
+function changeScene(name) {
   isAnimating = true;
+
   img.classList.remove("show");
   img.classList.add("hide");
 
   setTimeout(() => {
-    img.src = src;
-    img.onload = () => {
-      img.classList.remove("hide");
-      img.classList.add("show");
-      setTimeout(() => isAnimating = false, 800);
-    };
+    img.src = "./" + name;
+
+    img.classList.remove("hide");
+    img.classList.add("show");
+
+    setTimeout(() => {
+      isAnimating = false;
+    }, 800);
   }, 300);
 }
 
-/* เริ่มหน้าแรก */
+/* หน้าแรก */
 changeScene(scenes[0]);
 
-document.body.addEventListener("click", () => {
+/* คลิก */
+document.body.addEventListener("click", async () => {
   if (isAnimating) return;
   if (current >= scenes.length - 1) return;
 
@@ -51,8 +55,12 @@ document.body.addEventListener("click", () => {
   changeScene(scenes[current]);
 
   if (scenes[current] === "letteropen.png" && !musicStarted) {
-    music.currentTime = 0.23;
-    music.play();
-    musicStarted = true;
+    try {
+      await music.play();
+      music.currentTime = 0.23;
+      musicStarted = true;
+    } catch (e) {
+      console.log(e);
+    }
   }
 });
