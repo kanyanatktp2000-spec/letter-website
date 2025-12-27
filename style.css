@@ -1,0 +1,36 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  cursor: pointer;
+  background: black;
+}
+
+#background {
+  position: fixed;
+  inset: 0;
+  background: url("background.png") center/cover no-repeat;
+  z-index: -1;
+}
+
+#sceneImage {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  max-width: 90%;
+  max-height: 90%;
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+#sceneImage.show {
+  opacity: 1;
+}
+
+#sceneImage.hide {
+  opacity: 0;
+  transform: translate(-50%, -50%) scale(0.95);
+}
