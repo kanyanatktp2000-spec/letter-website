@@ -1,6 +1,6 @@
 const scenes = [
   "letter.png",
-  "letteropen.png", // เพลงเริ่มตรงนี้
+  "letteropen.png", // เพลงเริ่ม
   "wish.png",
   "1.png",
   "2.png",
@@ -12,55 +12,30 @@ const scenes = [
 ];
 
 let current = 0;
-let isAnimating = false;
-let musicStarted = false;
+let started = false;
 
 const img = document.getElementById("sceneImage");
 const music = document.getElementById("bgm");
 
-/* preload รูป */
-scenes.forEach(name => {
-  const i = new Image();
-  i.src = "./" + name;
-});
-
-/* เปลี่ยนฉาก */
-function changeScene(name) {
-  isAnimating = true;
-
-  img.classList.remove("show");
-  img.classList.add("hide");
-
-  setTimeout(() => {
-    img.src = "./" + name;
-
-    img.classList.remove("hide");
-    img.classList.add("show");
-
-    setTimeout(() => {
-      isAnimating = false;
-    }, 800);
-  }, 300);
-}
-
-/* หน้าแรก */
-changeScene(scenes[0]);
-
-/* คลิก */
-document.body.addEventListener("click", async () => {
-  if (isAnimating) return;
+function nextScene() {
   if (current >= scenes.length - 1) return;
 
   current++;
-  changeScene(scenes[current]);
+  img.style.opacity = 0;
 
-  if (scenes[current] === "letteropen.png" && !musicStarted) {
-    try {
-      await music.play();
+  setTimeout(() => {
+    img.src = "./" + scenes[current];
+    img.style.opacity = 1;
+
+    // เริ่มเพลงครั้งแรกบนมือถือ
+    if (scenes[current] === "letteropen.png" && !started) {
       music.currentTime = 0.23;
-      musicStarted = true;
-    } catch (e) {
-      console.log(e);
+      music.play().catch(() => {});
+      started = true;
     }
-  }
-});
+  }, 200);
+}
+
+/* รองรับมือถือ */
+document.addEventListener("touchstart", nextScene, { once: false });
+document.addEventListener("click", nextScene);
