@@ -1,6 +1,6 @@
 const scenes = [
   "letter.png",
-  "letteropen.png", // เพลงเริ่ม
+  "letteropen.png",
   "wish.png",
   "1.png",
   "2.png",
@@ -12,37 +12,43 @@ const scenes = [
 ];
 
 let index = 0;
-let locked = false;
+let busy = false;
 let musicStarted = false;
-let lastTap = 0;
+
+/* RAF lock = 1 frame ต่อ 1 action */
+let frameLocked = false;
 
 const img = document.getElementById("sceneImage");
 const music = document.getElementById("bgm");
 
-function goNext(e) {
+function nextScene(e) {
   e.preventDefault();
+  e.stopPropagation();
+  e.stopImmediatePropagation();
 
-  const now = Date.now();
+  /* กัน event ซ้อนระดับ system */
+  if (frameLocked) return;
+  frameLocked = true;
 
-  /* กันแตะรัว / event ซ้อน */
-  if (now - lastTap < 500) return;
-  lastTap = now;
+  requestAnimationFrame(() => {
+    frameLocked = false;
+  });
 
-  if (locked) return;
+  if (busy) return;
   if (index >= scenes.length - 1) return;
 
-  locked = true;
+  busy = true;
   index++;
 
-  const nextImg = new Image();
-  nextImg.src = "./" + scenes[index];
+  const loader = new Image();
+  loader.src = "./" + scenes[index];
 
-  nextImg.onload = () => {
-    img.style.opacity = 0;
+  loader.onload = () => {
+    img.style.opacity = "0";
 
     setTimeout(() => {
-      img.src = nextImg.src;
-      img.style.opacity = 1;
+      img.src = loader.src;
+      img.style.opacity = "1";
 
       if (scenes[index] === "letteropen.png" && !musicStarted) {
         music.currentTime = 0.23;
@@ -50,10 +56,14 @@ function goNext(e) {
         musicStarted = true;
       }
 
-      locked = false;
+      busy = false;
     }, 200);
   };
 }
 
-/* ใช้ pointerup เท่านั้น */
-document.addEventListener("pointerup", goNext);
+/* ใช้ pointerup อย่างเดียว + passive:false */
+document.addEventListener(
+  "pointerup",
+  nextScene,
+  { passive: false }
+);

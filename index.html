@@ -2,15 +2,26 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- สำคัญมาก: meta viewport ต้องอยู่ใน head เท่านั้น -->
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+  >
+
   <title>For You</title>
+
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
 
-  <img id="sceneImage" src="./letter.png" draggable="false">
+  <img
+    id="sceneImage"
+    src="./letter.png"
+    draggable="false"
+  >
 
-  <audio id="bgm">
+  <audio id="bgm" preload="none">
     <source src="./music.mp3" type="audio/mpeg">
   </audio>
 
