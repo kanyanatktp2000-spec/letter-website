@@ -11,31 +11,49 @@ const scenes = [
   "last1.png"
 ];
 
-let current = 0;
-let started = false;
+let index = 0;
+let locked = false;
+let musicStarted = false;
+let lastTap = 0;
 
 const img = document.getElementById("sceneImage");
 const music = document.getElementById("bgm");
 
-function nextScene() {
-  if (current >= scenes.length - 1) return;
+function goNext(e) {
+  e.preventDefault();
 
-  current++;
-  img.style.opacity = 0;
+  const now = Date.now();
 
-  setTimeout(() => {
-    img.src = "./" + scenes[current];
-    img.style.opacity = 1;
+  /* กันแตะรัว / event ซ้อน */
+  if (now - lastTap < 500) return;
+  lastTap = now;
 
-    // เริ่มเพลงครั้งแรกบนมือถือ
-    if (scenes[current] === "letteropen.png" && !started) {
-      music.currentTime = 0.23;
-      music.play().catch(() => {});
-      started = true;
-    }
-  }, 200);
+  if (locked) return;
+  if (index >= scenes.length - 1) return;
+
+  locked = true;
+  index++;
+
+  const nextImg = new Image();
+  nextImg.src = "./" + scenes[index];
+
+  nextImg.onload = () => {
+    img.style.opacity = 0;
+
+    setTimeout(() => {
+      img.src = nextImg.src;
+      img.style.opacity = 1;
+
+      if (scenes[index] === "letteropen.png" && !musicStarted) {
+        music.currentTime = 0.23;
+        music.play().catch(() => {});
+        musicStarted = true;
+      }
+
+      locked = false;
+    }, 200);
+  };
 }
 
-/* รองรับมือถือ */
-document.addEventListener("touchstart", nextScene, { once: false });
-document.addEventListener("click", nextScene);
+/* ใช้ pointerup เท่านั้น */
+document.addEventListener("pointerup", goNext);
